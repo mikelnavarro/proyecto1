@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Foro</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: auto; }
+        textarea { width: 100%; height: 60px; }
+        button { display: block; margin-top: 10px; }
+        .mensaje { border-bottom: 1px solid #ddd; padding: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>Foro Simple</h2>
+    <input type="text" id="usuario" placeholder="Tu nombre">
+    <textarea id="mensaje" placeholder="Escribe un mensaje..."></textarea>
+    <button onclick="enviarMensaje()">Enviar</button>
+    
+    <h3>Mensajes:</h3>
+    <div id="mensajes"></div>
+
+    <script>
+        async function cargarMensajes() {
+            const res = await fetch("http://localhost:3000/mensajes");
+            const datos = await res.json();
+            document.getElementById("mensajes").innerHTML = datos.map(m =>
+                `<div class="mensaje"><b>${m.usuario}:</b> ${m.mensaje}</div>`
+            ).join("");
+        }
+
+        async function enviarMensaje() {
+            const usuario = document.getElementById("usuario").value;
+            const mensaje = document.getElementById("mensaje").value;
+            await fetch("http://localhost:3000/mensajes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ usuario, mensaje })
+            });
+            document.getElementById("mensaje").value = "";
+            cargarMensajes();
+        }
+
+        cargarMensajes();
+    </script>
+
+</body>
+</html>
